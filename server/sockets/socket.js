@@ -1,19 +1,15 @@
 var mongoose = require('mongoose');
 
 var ChatHistorymodel = require('./../model/chathistory.schema.js');
-var db = require('./../../dbconnect.js'); //creating a connection to mongodb
-let client = require('./../../RedisClient');
-var pushToRedis = require('./../../PushToRedis');
+var db = require('./../connections/dbconnect.js'); //creating a connection to mongodb
+let client = require('./../connections/redisclient.js');
+var pushToRedis = require('./../PushToRedis');
    let async = require('async');
     let UserChannelList = require('./../model/userchannellist.schema.js');
     let latList = require('./../model/lat.schema.js'),
         userchannellist = new UserChannelList();
        // client = require('./../redisclient.js');
 let unreadCount = {};
-
-   
- 
-
 
 module.exports = function(io, socket) 
 { 
@@ -33,13 +29,13 @@ module.exports = function(io, socket)
     socket.on('getUnreadNotification', handlegetUnreadNotification); //request for unreadnotifications for a user.
     socket.on('receiveChatHistory', handleReceiveChatHistory); //request for sending chat history by user. FIXME:put new function from 6th sprint
     socket.on('getResetNotification', handleResetNotification); //request for resetting chat history. FIXMEput new function from 6th sprint.
-
+    socket.on('joinRoom',handleJoinRoom);
 
 
     function handleMessage(channel, message) { //message is text version of the message object.
         message = JSON.parse(message);
         console.log(message, "in handlemessage");
-        socket.emit('takeMessage', message);
+        socket.emit('takeMessage',channel,message);
     }
 
     function handleSubscribe(channel, count) { //count is the total number channels user is subscribed to.
@@ -57,34 +53,22 @@ module.exports = function(io, socket)
         console.log("Message sent", obj);
         pub.publish(channelID, JSON.stringify(obj));
         pushToRedis(channelID, obj);
-        UserChannelList.findOne({ username: sender }, function(err, res) {
-            let cList = res.channelList;
-            if (cList.indexOf(channelID) != -1) {
-                console.log(unreadCount);
-                unreadCount[channelID]++;
-                console.log(channelID, unreadCount[channelID]);
-                console.log(cList);
-                socket.emit('listenToMessage', cList, channelID);
-            }
-        })
+        // UserChannelList.findOne({ username: sender }, function(err, res) {
+        //     let cList = res.channelList;
+        //     if (cList.indexOf(channelID) != -1) {
+        //         console.log(unreadCount);
+        //         unreadCount[channelID]++;
+        //         console.log(channelID, unreadCount[channelID]);
+        //         console.log(cList);
+        //         socket.emit('listenToMessage', cList, channelID);
+        //     }
+        // })
         //client.hincrby(sender + "/unreadNotifications", channelID, 1);
     }
 
-
-
-    // socket.on('send message', function(sender, channelID, msg, timestamp) {
-    //     console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", unreadCount);
-        
-    //     obj = { 'sender': sender, 'msg': msg, 'TimeStamp': date }
-    //     console.log("Message sent", sender, channelID, msg, date);
-    //     client.lpush(channelID, JSON.stringify(obj), function(err, reply) {
-    //         console.log(reply);
-    //     });
-        
-    // });
-
-    function handleTyping(name) { //emit the typing event to all connected users.
-        io.emit('typing', name);
+    function handleTyping(name,channelId) { //emit the typing event to all connected users.
+        // io.emit('typing', name,channelId);
+        pub.publish(channelId,JSON.stringify({"typer":name}));
     }
 
     function handleDisconnect(socket) {
@@ -98,7 +82,6 @@ module.exports = function(io, socket)
             console.log(reply);
         });
     }
-
 
     function handleReceiveChatHistory(msg) {
         console.log(msg.channelName,"this is before reids gets the requersr");
@@ -129,6 +112,10 @@ module.exports = function(io, socket)
         });
     }
 
+    function handleJoinRoom(msg){ //message has the name of room to join
+         socket.join(msg);
+    }
+
     function getMongoHistory(msg) {
 
         if (msg.pageNo === "initial_secondary") {
@@ -146,17 +133,11 @@ module.exports = function(io, socket)
                     socket.emit('historyEmpty');
                 } else {
                     ChatHistorymodel.find({ _id: reply[0].p_page }, function(err, reply) {
-
                         socket.emit('chatHistory', reply[0].msgs, reply[0]._id);
                     });
                 }
-
             });
-
-
-
         }
-
     }
 
     function getRedisHistory(msg) {
@@ -176,9 +157,6 @@ module.exports = function(io, socket)
             }
         });
     }
-
-  
-
 
     socket.on('login', function(usrname) {
         let lat = null;
@@ -218,9 +196,6 @@ module.exports = function(io, socket)
 
         });
     });
-
-
-
 
     socket.on('currentChannel', function(currentChannel, prevChannel, userName) {
         let d = new Date();

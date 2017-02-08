@@ -2,10 +2,10 @@ const express = require('express')
     , app = express()
     , server = require('http').Server(app)
     , io = require('socket.io').listen(server)
-    , client = require('./redisclient.js')
+    , client = require('./connections/redisclient.js')
     , mongoose = require('mongoose')
     , socket = require('./sockets/socket.js');
-const db = require('./../dbconnect.js');
+const db = require('./connections/dbconnect.js');
 
 //MongoDB Connection ---------->
 db.on('error', console.error.bind(console, 'connection error:'));

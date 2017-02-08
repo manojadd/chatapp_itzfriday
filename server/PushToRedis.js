@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
-var ChatHistorymodel = require('./server/model/chathistory.schema.js');
-var db = require('./dbconnect.js'); //creating a connection to mongodb
-var client = require('./RedisClient');
+var ChatHistorymodel = require('./model/chathistory.schema.js');
+var db = require('./connections/dbconnect.js'); //creating a connection to mongodb
+var client = require('./connections/redisclient.js');
 
 
 
@@ -11,7 +11,7 @@ module.exports = function(channelID,ob){
 
 
 client.lpush(channelID, JSON.stringify(ob),
-    function(err, reply) { //FIXME: write a seperate function.
+    function(err, reply) { 
         console.log(reply);
         if (reply > 50) {
 

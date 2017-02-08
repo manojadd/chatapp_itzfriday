@@ -10,13 +10,35 @@ let User = require('./model/userchannellist.schema.js');
 let Lat = require('./model/lat.schema.js');
 
 for (var i = 1; i <= 10; i++) {
+if(i<5){  
    user = new User({
     username : 'user'+i ,
     channelList : ['bob#general', 'bob#dev', 'itzfriday#UI']
   });
   user.save(function(err, reply){
 
+  });}
+  else if(i<8){
+
+   user = new User({
+    username : 'user'+i ,
+    channelList : ['bob#general', 'itzfriday#UI']
   });
+  user.save(function(err, reply){
+
+  });
+  }
+  else{
+
+
+   user = new User({
+    username : 'user'+i ,
+    channelList : ['bob#general']
+  });
+  user.save(function(err, reply){
+
+  });
+  }
 }
 
 for(var i =1 ; i <= 10 ;i++){

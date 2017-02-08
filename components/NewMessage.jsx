@@ -12,7 +12,7 @@ export default class NewMessage extends Component {
 	}
 
 	handleChange(e){
-		this.props.psocket.emit('typing',this.props.name);	//emit the name of user typing.
+		this.props.psocket.emit('typing',this.props.name,this.props.channelId);	//emit the name of user typing.
 		this.setState({userInput:e.target.value});
 	}
 	handleClick(){

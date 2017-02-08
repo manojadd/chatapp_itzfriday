@@ -20,16 +20,16 @@ export default class Chat extends React.Component{
 			this.handleSomeoneAdded(name);
 		});
 		
-		socket.on('takeMessage',(msg)=>{ //Sent from socket server when a message is published in the redis channel.
-			this.handleTakeMessage(msg);
+		socket.on('takeMessage',(channelID,msg)=>{ //Sent from socket server when a message is published in the redis channel.
+			this.handleTakeMessage(channelID,msg);
 		});
 
 		socket.on('chatHistory',(msg,next)=>{ //msg is an array of objects having messages from a page in mongodb. 
 			this.handleChatHistory(msg,next);
 			});
-		socket.on('typing',(name)=>{ 
-				this.handleTyping(name);
-			});
+		// socket.on('typing',(name)=>{ 
+		// 		this.handleTyping(name);
+		// 	});
 		socket.on('pempty',(msg)=>{
 			this.handlePempty(msg);
 		});
@@ -51,13 +51,30 @@ export default class Chat extends React.Component{
 		//currently empty. 
 	}
 
-	handleTakeMessage(msg){
-		console.log(msg);
-		msg = this.handleTime(msg);
-		this.setState((prevState,props)=>{ 
-			prevState.chatHistory.push(msg); 
-			return {chatHistory:prevState.chatHistory};
-		});
+	handleTakeMessage(channelId,msg){
+		console.log("channel name: ",channelId,"message: ",msg);
+		if(channelId===this.props.channelID){
+
+			if(msg.hasOwnProperty('typer')){
+				this.handleTyping(msg.typer);
+			}
+
+			else 
+			{
+				console.log(msg);
+				msg = this.handleTime(msg);
+				this.setState((prevState,props)=>{ 
+						prevState.chatHistory.push(msg); 
+						return {chatHistory:prevState.chatHistory};
+				});
+			}
+		}
+		else{
+			if(msg.hasOwnProperty('typer')){
+			}
+			else
+			{this.props.LiveUnreadCount(channelId);}
+		}
 	}
 	handleChatHistory(msg,next){
 		console.log(msg);

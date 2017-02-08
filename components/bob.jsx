@@ -3,7 +3,6 @@ import ChannelList from './currentchannel.jsx';
 import io from 'socket.io-client';
 import async from 'async';
 import {List, ListItem,makeSelectable} from 'material-ui/List';
-import Form from './form.jsx';
 import Chat from './chat.jsx';
 import Header from './Header.jsx';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -72,7 +71,7 @@ export default class Bob extends React.Component{
                       temp[channel]=0
                       console.log(temp);
                       that.setState({unreadCount:temp}); 
-                     }.bind(this),2000);
+                     }.bind(this),500);
 
       }
 
@@ -126,6 +125,12 @@ export default class Bob extends React.Component{
         });
         this.state.socket.emit('currentChannel', item,prevChannel,this.state.userName);
       }
+
+      handleLiveUnreadCount(channelID){
+        this.setState((prevState,props)=>{
+          return prevState.unreadCount[channelID]++;
+        });
+      }
      
       render(){
         let a=this.getProjectList();
@@ -140,7 +145,7 @@ export default class Bob extends React.Component{
                <ChannelList channelList={this.state.projectsList} currentChannel={this.state.currentChannel} unreadCount={this.state.unreadCount} setCurrentChannel={this.toggleCurrentChannel}/>
              </Col>
              <Col xs={10} style={{height:"100%"}}>
-               <Chat style={{height:"100%"}} channelID={this.state.currentChannel} socket={this.state.socket} userName={this.state.userName}/>
+               <Chat style={{height:"100%"}} channelID={this.state.currentChannel} socket={this.state.socket} LiveUnreadCount={this.handleLiveUnreadCount.bind(this)} userName={this.state.userName}/>
              </Col>
             </Row>
            </Grid>);
