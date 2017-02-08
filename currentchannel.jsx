@@ -27,7 +27,7 @@ export default class ChannelList extends React.Component{
     // });
     return(
       <div>
-      <h4>Channels</h4s>
+      <h4>Channels</h4>
       <SelectableList  value={this.props.currentChannel}>
       {
           this.props.channelList.map((item,index)=>{
