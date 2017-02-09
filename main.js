@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Bob from './components/Bob.jsx';
+import Bob from './client/Bob.jsx';
 
 
 ReactDOM.render(
