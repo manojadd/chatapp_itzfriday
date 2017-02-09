@@ -11,22 +11,14 @@ export default class ChannelList extends React.Component{
   constructor(props){
     super(props);
     this.handleChange=this.handleChange.bind(this);
-    console.log("inside channelList");
   }
 
   handleChange(item){
-    console.log("setCurrentChannel", item);
     var temp=this.props.currentChannel;
     this.props.setCurrentChannel(item,temp);
-    //this.props.
-    // console.log("currentChannel emit to socket : ",item);
   }
 
   render(){
-    console.log('this.props.currentChannel', this.props.currentChannel,this.props.channelList,this.props.unreadCount);
-    // this.props.unreadCount.map((item,i)=>{
-    //   console.log(item,"mmmmm");
-    // });
     return(
       <div style={{height:'100%'}}>
         <Grid style={{height:'100%',width:"100%"}}>

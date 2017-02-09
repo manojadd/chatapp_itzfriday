@@ -6,8 +6,8 @@ export default class Header extends React.Component{
 
 		return(
 			<AppBar
-    title="Bob"
-  />)
+				title="Bob"
+				/>)
 
-	}
-}
+			}
+		}

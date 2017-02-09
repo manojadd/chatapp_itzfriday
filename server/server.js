@@ -13,8 +13,6 @@ db.once('open', function() {
   // we're connected!
 });
 
-
-
 //Redis connection ---------->
 client.on('connect', function() {
   console.log('Connected');

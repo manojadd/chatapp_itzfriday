@@ -30,12 +30,10 @@ export default class Bob extends React.Component{
     this.getChannelsInProject=this.getChannelsInProject.bind(this);
   }
   componentDidMount(){
-    //socket=io('http://localhost:8000');
     let that=this;
     this.state.socket.on('channelList', function (list,unreadCount,lat) {
       that.setState({channelsList:list,unreadCount:unreadCount,lat:lat});
       that.resetCurrentChannelUnread(that.state.unreadCount);
-
     });
 
     this.state.socket.on("updateUnread",function(currentChannel,prevChannel,d){
@@ -43,14 +41,11 @@ export default class Bob extends React.Component{
       let unread=that.state.unreadCount;
       temp[prevChannel]=d;
       unread[prevChannel]=0;
-      console.log(currentChannel,"bbbbbb");
-      //unread[that.state.currentChannel]=0;
       that.setState({lat:temp,unreadCount:unread})
       that.resetCurrentChannelUnread(that.state.unreadCount);
     })
 
     this.state.socket.on("listenToMessage",function(channelList,channelName){
-      //console.log(channelList,"aaaa");
       if(channelList.indexOf(channelName)!=-1){
         var temp=that.state.unreadCount;
         temp[channelName]++;
@@ -65,11 +60,9 @@ export default class Bob extends React.Component{
   resetCurrentChannelUnread(unreadCount){
     var temp=unreadCount;
     var channel=this.state.currentChannel;
-    console.log(temp[channel],"temp");
     let that=this;
     setTimeout(function(){
       temp[channel]=0
-      console.log(temp);
       that.setState({unreadCount:temp});
     }.bind(this),500);
 
@@ -119,7 +112,6 @@ export default class Bob extends React.Component{
     }
 
     toggleCurrentChannel(item,prevChannel){
-      console.log("Inside the bob ",item);
       this.setState({
         currentChannel:item
       });
@@ -136,7 +128,6 @@ export default class Bob extends React.Component{
       let a=this.getProjectList();
       let chatArea;
       if(this.state.loggedIn){
-        console.log(this.state.currentChannel,"current Channel");
 
         chatArea=(
           <Grid  style={{height:"100vh"}}>
@@ -154,7 +145,6 @@ export default class Bob extends React.Component{
         {
           chatArea=null;
         }
-        //console.log(a);
         return(
           <div>
             <Header/>
