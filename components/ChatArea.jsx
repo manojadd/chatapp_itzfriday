@@ -13,27 +13,27 @@ export default class Chat extends React.Component{
 		socket=this.props.socket;
 		console.log("Inside Chat");
 	}
-	
-	componentDidMount() {	
+
+	componentDidMount() {
 
 		socket.on('someoneAdded',(name)=>{ //Sent when a user subscribes to the channel.
 			this.handleSomeoneAdded(name);
 		});
-		
+
 		socket.on('takeMessage',(channelID,msg)=>{ //Sent from socket server when a message is published in the redis channel.
 			this.handleTakeMessage(channelID,msg);
 		});
 
-		socket.on('chatHistory',(msg,next)=>{ //msg is an array of objects having messages from a page in mongodb. 
+		socket.on('chatHistory',(msg,next)=>{ //msg is an array of objects having messages from a page in mongodb.
 			this.handleChatHistory(msg,next);
 			});
-		// socket.on('typing',(name)=>{ 
+		// socket.on('typing',(name)=>{
 		// 		this.handleTyping(name);
 		// 	});
 		socket.on('pempty',(msg)=>{
 			this.handlePempty(msg);
 		});
-		
+
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -43,12 +43,12 @@ export default class Chat extends React.Component{
 			let msg = {"pageNo":"initial_primary","channelName":nextProps.channelID};//increment the pages displayed currently.
 			nextProps.socket.emit('receiveChatHistory',msg);
 			this.setState({chatHistory:[]});
-			
+
 		}
 	}
 
 	handleSomeoneAdded(msg){
-		//currently empty. 
+		//currently empty.
 	}
 
 	handleTakeMessage(channelId,msg){
@@ -59,12 +59,12 @@ export default class Chat extends React.Component{
 				this.handleTyping(msg.typer);
 			}
 
-			else 
+			else
 			{
 				console.log(msg);
 				msg = this.handleTime(msg);
-				this.setState((prevState,props)=>{ 
-						prevState.chatHistory.push(msg); 
+				this.setState((prevState,props)=>{
+						prevState.chatHistory.push(msg);
 						return {chatHistory:prevState.chatHistory};
 				});
 			}
@@ -82,7 +82,7 @@ export default class Chat extends React.Component{
 		msg.forEach((msgob)=>{
 
 			msgob = this.handleTime(msgob);
-			mess.unshift(msgob); 
+			mess.unshift(msgob);
 		});
 		this.setState((prevState,props)=>{ return {chatHistory:mess,pagesDisplayed:prevState.pagesDisplayed+1,next:next};});
 	}
@@ -123,7 +123,7 @@ export default class Chat extends React.Component{
 		else if(this.state.typing.length>1)
 			{
 				typ = <Chip>{this.state.typing.slice(0,5) + " and others are typing"}</Chip>
-				
+
 			}
 		else
 			{
@@ -133,20 +133,20 @@ export default class Chat extends React.Component{
 			<center style={{height:"100%"}}>
 				<div style={{height:"100%"}}>
 
-				<Grid fluid={true} style={{height:'100%'}}>
-				<Row style={{ height:'6%',overflow:'hidden'}}>
-					<Col lg={12} style={{height:'100%'}}>
+				<Grid  style={{height:'100%', width:"100%"}}>
+				<Row style={{ height:'6%',overflow:'hidden',width:"100%"}}>
+					<Col xs={12} sm={12} md={12} lg={12} style={{height:'100%'}}>
 						{typ}
 					</Col>
 				</Row>
-				<Row style={{height:'84%',overflow:'auto'}}>
-					<Col lg={12}>
+				<Row style={{height:'84%',overflow:'auto',width:"100%"}}>
+					<Col xs={12} sm={12} md={12} lg={12}>
 						<ChatHistory channelId={this.props.channelID} psocket={socket} next={this.state.next} username={this.props.userName} chatHistory={this.state.chatHistory}/>
 					</Col>
 				</Row>
 
 				<Row bottom="lg" style={{height: '10%',width:'100%'}}>
-					<Col lg={12}>
+					<Col xs={12} sm={12} md={12} lg={12}>
 						<NewMessage channelId={this.props.channelID} psocket={socket} name={this.props.userName}/>
 					</Col>
 				</Row>
@@ -155,5 +155,4 @@ export default class Chat extends React.Component{
 			</center>
 		);
 	}
-}	
-
+}

@@ -20,27 +20,26 @@ export default class NewMessage extends Component {
 		{this.props.psocket.emit("send message",this.props.name,this.props.channelId,this.state.userInput);
 				this.setState({userInput:""});}
 	}
-	
+
 	render() {
 		console.log(this.state.userInput,"here");
 		return (
-			<div>
-			<Grid fluid={true}>
-			<Row>
-			<Col lg={11}>
-				<TextField value={this.state.userInput} hintText="Type Message" 
-				fullWidth={true} multiLine={true} rowsMax={4} 
+			<div style={{width:"100%"}}>
+			<Grid style={{width:"100%"}}>
+			<Row style={{width:"100%"}}>
+			<Col xs={11} sm={11} md={11} lg={11}>
+				<TextField value={this.state.userInput} hintText="Type Message"
+				fullWidth={true} multiLine={true} rowsMax={4}
 				 onChange={this.handleChange.bind(this)}/>
 			</Col>
-			<Col lg={1}>
+			<Col xs={1} sm={1} md={1} lg={1} style={{position:'relative',right:20,top:5}} >
 				 <RaisedButton label="SEND" primary={true} onClick={this.handleClick.bind(this)} />
 			</Col>
-			
+
 			</Row>
 			</Grid>
 			</div>
 		);
 	}
-	
-}
 
+}
