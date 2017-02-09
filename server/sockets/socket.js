@@ -13,7 +13,6 @@ let unreadCount = {};
 
 module.exports = function(io, socket)
 {
-
   const sub = client.duplicate(); //subscriber for will subscribe to all channels he is member of
   const pub = client.duplicate(); //only one publisher is enough
 
@@ -30,7 +29,6 @@ module.exports = function(io, socket)
   socket.on('receiveChatHistory', handleReceiveChatHistory); //request for sending chat history by user. FIXME:put new function from 6th sprint
   socket.on('getResetNotification', handleResetNotification); //request for resetting chat history. FIXMEput new function from 6th sprint.
   socket.on('joinRoom',handleJoinRoom);
-
 
   function handleMessage(channel, message) { //message is text version of the message object.
     message = JSON.parse(message);
@@ -57,6 +55,7 @@ module.exports = function(io, socket)
   }
 
   function handleDisconnect(socket) {
+
   }
 
   function handlegetUnreadNotification(msg) { //FIXME: Write again.
@@ -73,7 +72,6 @@ module.exports = function(io, socket)
     } else {
       getMongoHistory(msg);
     }
-
   }
 
   function handlegetUnreadNotification(msg) {
@@ -94,7 +92,6 @@ module.exports = function(io, socket)
   }
 
   function getMongoHistory(msg) {
-
     if (msg.pageNo === "initial_secondary") {
       ChatHistorymodel.find({}).sort({ _id: -1 }).limit(1).exec((err, reply) => {
         if (reply.length === 0) {
@@ -103,7 +100,6 @@ module.exports = function(io, socket)
           socket.emit('chatHistory', reply[0].msgs, reply[0]._id);
         }
       });
-
     } else {
       ChatHistorymodel.find({ _id: msg.pageNo }, function(err, reply) {
         if (reply[0].p_page === null) {
@@ -120,9 +116,7 @@ module.exports = function(io, socket)
   function getRedisHistory(msg) {
     client.lrange(msg.channelName, 0, -1, function(err, reply) {
       if (reply == "") {
-
         socket.emit('pempty', "initial_secondary");
-
       } else {
         let messages = reply.map((element, i) => {
           return JSON.parse(element);
@@ -155,12 +149,10 @@ module.exports = function(io, socket)
 
           unreadCount[a] = count;
           callback();
-
         });
       }, function(err) {
         socket.emit('channelList', reply.channelList, unreadCount, lat);
       });
-
     });
   });
 
